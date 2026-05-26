@@ -1,5 +1,8 @@
 # Notes
 
+> Plain-language overview and setup: see [README.md](README.md).  
+> **AI disclosure:** Vue composable/component structure and some documentation were drafted with AI assistance; backend architecture and tests were implemented and verified by me.
+
 ## Approach
 
 - **View counter:** `GET /api/vehicles/{id}` calls `VehicleViewService::recordView()`. Each hit does an atomic `Cache::increment()` on key `vehicle_views:{vehicleId}:{hour}` (UTC hour bucket). No per-request `UPDATE` on the database. Pending keys are tracked in a `vehicle_views:dirty` index for batch flush.
