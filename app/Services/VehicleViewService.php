@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Vehicle;
 use App\Models\VehicleView;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -60,6 +61,52 @@ class VehicleViewService
         }
 
         Cache::forget(self::DIRTY_INDEX_KEY);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function getTrending(int $limit = 10): array
+    {
+        $this->flushPending();
+
+        $since = Carbon::now('UTC')->subHours(24);
+
+        $ranked = VehicleView::query()
+            ->select('vehicle_id')
+            ->selectRaw('SUM(view_count) as view_count')
+            ->where('bucket_hour', '>=', $since)
+            ->groupBy('vehicle_id')
+            ->orderByDesc('view_count')
+            ->orderBy('vehicle_id')
+            ->limit($limit)
+            ->get();
+
+        if ($ranked->isEmpty()) {
+            return [];
+        }
+
+        $vehicles = Vehicle::query()
+            ->whereIn('id', $ranked->pluck('vehicle_id'))
+            ->get()
+            ->keyBy('id');
+
+        return $ranked
+            ->filter(fn ($row) => $vehicles->has($row->vehicle_id))
+            ->map(function ($row) use ($vehicles) {
+                $vehicle = $vehicles->get($row->vehicle_id);
+
+                return [
+                    'id' => $vehicle->id,
+                    'make' => $vehicle->make,
+                    'model' => $vehicle->model,
+                    'year' => $vehicle->year,
+                    'price' => $vehicle->price,
+                    'view_count' => (int) $row->view_count,
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     private function cacheKey(int $vehicleId): string

@@ -19,9 +19,6 @@ class VehicleController extends Controller
 
     public function trending(): JsonResponse
     {
-        // TODO: return the top 10 most-viewed vehicles in the last 24h,
-        //   each with their vehicle data and view count.
-        //   The frontend will poll this every 30s.
-        return response()->json(['error' => 'Not implemented'], 501);
+        return response()->json($this->vehicleViews->getTrending());
     }
 }
