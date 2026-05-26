@@ -12,8 +12,6 @@
 
 # Local dev only — do not commit
 database/database.sqlite
-package-lock.json
-public/index.php
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
