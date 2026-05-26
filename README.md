@@ -25,6 +25,8 @@ php artisan serve    # terminal 2
 
 Open http://127.0.0.1:8000
 
+**Production assets (single terminal):** run `npm run build` once, then only `php artisan serve` (no `npm run dev`). Remove `public/hot` if present so Laravel uses `public/build/`.
+
 ### Option B — DDEV
 
 Requires DDEV.
