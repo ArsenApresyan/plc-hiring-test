@@ -1,8 +1,6 @@
 import './bootstrap';
 
 import { createApp } from 'vue';
-import TrendingVehicles from './components/TrendingVehicles.vue';
+import App from './App.vue';
 
-const app = createApp({});
-app.component('trending-vehicles', TrendingVehicles);
-app.mount('#app');
+createApp(App).mount('#app');
